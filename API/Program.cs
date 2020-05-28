@@ -16,22 +16,24 @@ namespace API
     {
         public static void Main(string[] args)
         {
+            //host stores the createhostbuilder method
             var host = CreateHostBuilder(args).Build();
-            using (var scope = host.Services.CreateScope())
+            //use using because we want automatic disposal of the dbcontext after it has been used
+            using (var scope = host.Services.CreateScope()) //get the scope here
             {
-                var services = scope.ServiceProvider;
+                var services = scope.ServiceProvider; //get reference to services
                 try{
-                    var context = services.GetRequiredService<DataContext>();
-                    context.Database.Migrate();
+                    var context = services.GetRequiredService<DataContext>(); //get the db context
+                    context.Database.Migrate(); //migrate the db on startup
                 }
-                catch (Exception ex)
+                catch (Exception ex) //catch exceptions here
                 {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    var logger = services.GetRequiredService<ILogger<Program>>(); //log the issue
                     logger.LogError(ex, "An error occured during migration.");
                 }
             }
             
-            host.Run();
+            host.Run(); //run the app
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
