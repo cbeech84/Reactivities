@@ -13,11 +13,8 @@ class App extends Component {
     .then((response) => {
       this.setState({
         values: response.data
-      })
-    })
-    // this.setState({ //we can use this when we just want to set static data - api solution is above
-    //   values: [{id: 1, name: 'Value 101'}, {id:2, name: 'Value 102'}]
-    // })
+      });
+    });
   }
   render() {
     return (
@@ -31,11 +28,6 @@ class App extends Component {
             <List.Item key={value.id}>{value.name}</List.Item>
           ))}
         </List>
-          {/* <ul> //this entire list is replaced by the list semantic UI list above
-            {this.state.values.map((value: any) => ( //mapping values using a callback function to the list below - we are turning off type safety by giving it the any type.
-              <li key={value.id}>{value.name}</li> //important to always provide a key value, otherwise React gets annoyed with you
-            ))}
-          </ul> */}
       </div>
     );
   }
