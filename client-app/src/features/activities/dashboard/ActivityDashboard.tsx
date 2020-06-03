@@ -1,0 +1,63 @@
+import React from 'react'
+import { Grid } from 'semantic-ui-react'
+import { IActivity } from '../../../app/models/activity'
+import ActivityList from '../dashboard/ActivityList'
+import ActivityDetails from '../details/ActivityDetails'
+import ActivityForm from '../form/ActivityForm'
+
+
+interface IProps { //you must create an interface to tell ActivityDashboard (or other components) the types of the properties it is inheriting
+    activities: IActivity[];
+    selectActivity: (id: string) => void;
+    selectedActivity: IActivity | null;
+    editMode: boolean;
+    setEditMode: (editMode: boolean) => void;
+    setSelectedActivity : (activity : IActivity | null) => void;
+    createActivity: (activity: IActivity) => void;
+    editActivity: (activity: IActivity) => void;
+    deleteActivity: (id: string) => void;
+}
+
+export const ActivityDashboard: React.FC<IProps> = ({ //pass in IProps as a type parameter
+    activities, 
+    selectActivity, 
+    selectedActivity,
+    editMode,
+    setEditMode,
+    setSelectedActivity,
+    createActivity,
+    editActivity,
+    deleteActivity
+    }) => {  //destructure the properties of IProp for use below
+    return (
+        <Grid>
+            <Grid.Column width={10}>
+                <ActivityList
+                    activities={activities}
+                    selectActivity={selectActivity}
+                    deleteActivity={deleteActivity}
+                />
+            </Grid.Column>
+            <Grid.Column width={6}>
+                {selectedActivity && !editMode && 
+                <ActivityDetails 
+                  activity={selectedActivity}
+                  setEditMode={setEditMode}
+                  setSelectedActivity={setSelectedActivity}
+                />}
+                {/* // the above will only display if there is a selectedActivity AND we are not in editMode*/}
+                {editMode && <ActivityForm
+                  // eslint-disable-next-line
+                  key={selectedActivity && selectedActivity.id || 0}
+                  setEditMode={setEditMode}
+                  activity={selectedActivity!}
+                  createActivity={createActivity}
+                  editActivity={editActivity}
+                />}
+                {/* ActivityForm only if we are in editMode */}
+            </Grid.Column>
+        </Grid>
+    )
+}
+
+export default ActivityDashboard
