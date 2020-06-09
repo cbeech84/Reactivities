@@ -2,6 +2,7 @@ import { observable, action, computed, configure, runInAction } from 'mobx';
 import { createContext, SyntheticEvent } from 'react';
 import { IActivity } from '../models/activity';
 import agent from '../api/agent';
+import { act } from 'react-dom/test-utils';
 
 configure({enforceActions: 'always'}); //enforces strict mode - means all actions that modify observables must now have action decorators (including promises and async await)
 
@@ -128,5 +129,25 @@ class ActivityStore {
     this.editMode = false;
   }
 }
+
+//alternative to using decorators - include the decorate function in the import then add this function
+// decorate(ActivityStore, {
+//   activityRegistry: observable,
+//   activities: observable,
+//   selectActivity: observable,
+//   loadingInitial: observable,
+//   editMode: observable,
+//   submitting: observable,
+//   target: observable,
+//   activitiesByDate: computed,
+//   loadActivities: action,
+//   createActivity: action,
+//   editActivity: action,
+//   deleteActivity: action,
+//   openCreateForm: action,
+//   cancelSelectedActivity: action,
+//   cancelFormOpen: action,
+//   selectActivity: action,
+// });
 
 export default createContext(new ActivityStore());
