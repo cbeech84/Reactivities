@@ -1,65 +1,28 @@
-import React, { SyntheticEvent } from 'react'
-import { Grid } from 'semantic-ui-react'
-import { IActivity } from '../../../app/models/activity'
-import ActivityList from '../dashboard/ActivityList'
-import ActivityDetails from '../details/ActivityDetails'
-import ActivityForm from '../form/ActivityForm'
+import React, { useContext } from 'react';
+import { Grid } from 'semantic-ui-react';
+import ActivityList from '../dashboard/ActivityList';
+import ActivityDetails from '../details/ActivityDetails';
+import ActivityForm from '../form/ActivityForm';
+import { observer } from 'mobx-react-lite';
+import ActivityStore from '../../../app/stores/activityStore'
 
-
-interface IProps { //you must create an interface to tell ActivityDashboard (or other components) the types of the properties it is inheriting
-    activities: IActivity[];
-    selectActivity: (id: string) => void;
-    selectedActivity: IActivity | null;
-    editMode: boolean;
-    setEditMode: (editMode: boolean) => void;
-    setSelectedActivity : (activity : IActivity | null) => void;
-    createActivity: (activity: IActivity) => void;
-    editActivity: (activity: IActivity) => void;
-    deleteActivity: (e: SyntheticEvent<HTMLButtonElement>, id: string) => void;
-    submitting: boolean;
-    target: string;
-}
-
-export const ActivityDashboard: React.FC<IProps> = ({ //pass in IProps as a type parameter
-    activities, 
-    selectActivity, 
-    selectedActivity,
-    editMode,
-    setEditMode,
-    setSelectedActivity,
-    createActivity,
-    editActivity,
-    deleteActivity,
-    submitting,
-    target
-    }) => {  //destructure the properties of IProp for use below
+export const ActivityDashboard: React.FC = () => {  //destructure the properties of IProp for use below
+    const activityStore = useContext(ActivityStore); //get the activitystore here
+    const {editMode, selectedActivity} = activityStore; //destructure the required properties
     return (
         <Grid>
             <Grid.Column width={10}>
-                <ActivityList
-                    activities={activities}
-                    selectActivity={selectActivity}
-                    deleteActivity={deleteActivity}
-                    submitting={submitting}
-                    target={target}
-                />
+                <ActivityList />
             </Grid.Column>
             <Grid.Column width={6}>
-                {selectedActivity && !editMode && 
-                <ActivityDetails 
-                  activity={selectedActivity}
-                  setEditMode={setEditMode}
-                  setSelectedActivity={setSelectedActivity}                  
-                />}
+                {selectedActivity && !editMode && (
+                  <ActivityDetails />
+                )}
                 {/* // the above will only display if there is a selectedActivity AND we are not in editMode*/}
                 {editMode && <ActivityForm
                   // eslint-disable-next-line
                   key={selectedActivity && selectedActivity.id || 0}
-                  setEditMode={setEditMode}
                   activity={selectedActivity!}
-                  createActivity={createActivity}
-                  editActivity={editActivity}
-                  submitting={submitting}
                 />}
                 {/* ActivityForm only if we are in editMode */}
             </Grid.Column>
@@ -67,4 +30,4 @@ export const ActivityDashboard: React.FC<IProps> = ({ //pass in IProps as a type
     )
 }
 
-export default ActivityDashboard
+export default observer(ActivityDashboard);
