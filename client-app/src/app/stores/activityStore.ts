@@ -15,8 +15,22 @@ class ActivityStore {
   @observable target = '';
 
   @computed get activitiesByDate() {
-    return Array.from(this.activityRegistry.values())
-      .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+    return this.groupActivitiesByDate(Array.from(this.activityRegistry.values()));
+  }
+
+  groupActivitiesByDate(activities: IActivity[]) {
+    const sortedActivities = activities.sort(
+      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    )
+    //creating an array of arrays, where they key is the date and the values are the activity objects
+    //Object.entries returns an array for each entry in an object (in this case the sortedActivities array) using keys and values where values are the properties of the entries (or in this case, an entire object each, with a generated key)
+    //reduce takes array values and reduces them to a single value, then stores them in the first argument as an array
+    //here it is taking sortedActivities and putting the result of the callback function called against activity into the activities array, which is stored as an object, defined after the callback
+    return Object.entries(sortedActivities.reduce((activities, activity) => {
+      const date = activity.date.split('T')[0];
+      activities[date] = activities[date] ? [...activities[date], activity] : [activity]; //if the date for multiple entries is the same, we spread these into a new array, but if not, we create an array with a single entry
+      return activities;
+    }, {} as {[key: string] : IActivity[]}));
   }
 
   @action loadActivities = async () => {
