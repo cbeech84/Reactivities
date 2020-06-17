@@ -80,8 +80,9 @@ class ActivityStore {
         runInAction('get activity error', () => {
           this.loadingInitial = false;
         })
-        //console.log(error);
-        throw error; //instead of logging the error, we throw the error again, so we can handle it in ActivityDetails
+        console.log(error);
+        //throw error; //instead of logging the error, we throw the error again, so we can handle it in ActivityDetails
+        //since agent.ts is now dealing with errors, we can go back to just logging the error here
       }
     }
   }
