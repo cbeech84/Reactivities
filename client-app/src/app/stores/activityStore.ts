@@ -80,7 +80,8 @@ class ActivityStore {
         runInAction('get activity error', () => {
           this.loadingInitial = false;
         })
-        console.log(error);
+        //console.log(error);
+        throw error; //instead of logging the error, we throw the error again, so we can handle it in ActivityDetails
       }
     }
   }

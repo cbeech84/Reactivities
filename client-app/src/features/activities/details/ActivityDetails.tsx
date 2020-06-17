@@ -13,15 +13,20 @@ interface DetailParams {
   id: string
 }
 
-const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({match}) => { //in order to load the activity, we take the ID from the route's parameters (but we create a custom params interface to tell React about the custom id)
+const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({match, history}) => { //in order to load the activity, we take the ID from the route's parameters (but we create a custom params interface to tell React about the custom id)
   const activityStore = useContext(ActivityStore); //get the activitystore here
   const {activity, loadActivity, loadingInitial} = activityStore; //destructure the required properties
 
   useEffect(() => {
-    loadActivity(match.params.id)
-  },[loadActivity, match.params.id]); //dependency is set here because we only want the activity to load once, when the component is mounted.
+    loadActivity(match.params.id).catch(() => { //add the catch here to catch the error generated in activityStore...!
+      history.push('/notfound');
+    })
+  },[loadActivity, match.params.id, history]); //dependency is set here because we only want the activity to load once, when the component is mounted.
 
   if (loadingInitial || !activity) return <LoadingComponent content='Loading activity...'/>
+
+  if (!activity)
+    return <h2>Activity not found</h2>
 
   return (
     <Grid>

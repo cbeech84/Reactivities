@@ -3,6 +3,13 @@ import { IActivity } from '../models/activity'
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
+//adding an interceptor, to pick up any errors, and return an appropriate error message
+axios.interceptors.response.use(undefined, error => {
+  if (error.response.status === 404) {
+    throw error.response; //throw the error to activityStore
+  }
+})
+
 const responseBody = (response: AxiosResponse) => response.data;
 
 const sleep = (ms: number) => (response: AxiosResponse) => //this is known as currying - it transforms a function.
