@@ -1,22 +1,19 @@
 import React, { useContext, useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import ActivityList from '../dashboard/ActivityList';
-// import ActivityDetails from '../details/ActivityDetails';
-// import ActivityForm from '../form/ActivityForm';
 import { observer } from 'mobx-react-lite';
-import ActivityStore from '../../../app/stores/activityStore'
 import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { RootStoreContext } from '../../../app/stores/rootStore';
 
-export const ActivityDashboard: React.FC = () => {  //destructure the properties of IProp for use below
-    //const activityStore = useContext(ActivityStore); //get the activitystore here
-    //const {editMode, activity} = activityStore; //destructure the required properties
-    const activityStore = useContext(ActivityStore);
+export const ActivityDashboard: React.FC = () => {
+    const rootStore = useContext(RootStoreContext);
+    const {loadActivities, loadingInitial} = rootStore.activityStore //create the rootStore and destructure the required components from it
 
     useEffect(() => {
-        activityStore.loadActivities();
-    }, [activityStore]);
+        loadActivities();
+    }, [loadActivities]);
         
-    if (activityStore.loadingInitial) return <LoadingComponent content={'Loading activities...'}/>
+    if (loadingInitial) return <LoadingComponent content={'Loading activities...'}/>
     return (
         <Grid>
             <Grid.Column width={10}>

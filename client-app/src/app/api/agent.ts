@@ -2,8 +2,17 @@ import axios, { AxiosResponse } from 'axios';
 import { IActivity } from '../models/activity'
 import { history } from '../..';
 import { toast } from 'react-toastify';
+import { IUser, IUserFormValues } from '../models/user';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
+
+axios.interceptors.request.use((config) => { //this ensures that the auth token is stored in browser storage and passed up to the activities screen to allow access.
+  const token = window.localStorage.getItem('jwt');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+}, error => {
+  return Promise.reject(error);
+})
 
 //adding an interceptor, to pick up any errors, and return an appropriate error message
 axios.interceptors.response.use(undefined, error => {
@@ -21,7 +30,7 @@ axios.interceptors.response.use(undefined, error => {
   if (status === 500) {
     toast.error('Server error - check the terminal for more info!')
   }
-  throw error; //catch errors in creation or editing so they can be logged to console by createActivity or editActivity in activityStore.
+  throw error.response; //catch errors in creation or editing so they can be logged to console by createActivity or editActivity in activityStore.
 })
 
 const responseBody = (response: AxiosResponse) => response.data;
@@ -45,6 +54,13 @@ const Activities = {
   delete: (id: string) => requests.del(`/activities/${id}`)
 }
 
+const User = {
+  current: (): Promise<IUser> => requests.get('/user'),
+  login: (user: IUserFormValues) : Promise<IUser> => requests.post('/user/login', user),
+  register: (user: IUserFormValues) : Promise<IUser> => requests.post('/user/register', user)
+}
+
 export default {
-  Activities
+  Activities,
+  User
 }

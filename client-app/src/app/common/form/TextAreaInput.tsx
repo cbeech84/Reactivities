@@ -2,7 +2,7 @@ import React from 'react'
 import { FieldRenderProps } from 'react-final-form';
 import { FormFieldProps, Form, Label } from 'semantic-ui-react';
 
-interface IProps extends FieldRenderProps<string, HTMLElement>, FormFieldProps { }
+interface IProps extends FieldRenderProps<string>, FormFieldProps { }
 
 const TextAreaInput : React.FC<IProps> = ({ input, width, rows, placeholder, meta: { touched, error } }) => { 
   return (
