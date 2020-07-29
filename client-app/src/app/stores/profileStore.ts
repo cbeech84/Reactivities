@@ -14,6 +14,8 @@ export default class ProfileSTore {
   @observable loadingProfile = true;
   @observable uploadingPhoto = false;
   @observable loadingPhoto = false;
+  @observable editMode = false;
+  @observable loadingForm = false;
 
   @computed get isCurrentUser() {
     if (this.rootStore.userStore.user && this.profile) {
@@ -36,6 +38,30 @@ export default class ProfileSTore {
         this.loadingProfile = false;
       })
       console.log(error);
+    }
+  }
+
+  @action setEditMode = () => {
+    this.editMode = !this.editMode;
+  }
+
+  @action updateProfile = async (profile: Partial<IProfile>) => {
+    this.loadingForm = true;
+    try {
+      await agent.Profiles.updateProfile(profile)
+      runInAction(() => {
+        if (profile.displayName !== this.rootStore.userStore.user!.displayName) {
+          this.rootStore.userStore.user!.displayName = profile.displayName!;
+        }
+        this.profile = {...this.profile!, ...profile};
+        this.editMode = false;
+        this.loadingForm = false;
+      })
+    } catch (error) {
+      toast.error('Problem updating your profile')   
+      runInAction(() => {
+        this.loadingForm = false;
+      })  
     }
   }
 
