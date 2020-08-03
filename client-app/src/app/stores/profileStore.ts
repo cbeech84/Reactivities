@@ -1,5 +1,5 @@
 import {RootStore} from './rootStore';
-import { observable, runInAction, action, computed } from 'mobx';
+import { observable, runInAction, action, computed, reaction } from 'mobx';
 import { IProfile, IPhoto } from '../models/profile';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
@@ -8,14 +8,28 @@ export default class ProfileSTore {
   rootStore: RootStore
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore
+
+    reaction(
+      () => this.activeTab,
+      activeTab => {
+        if (activeTab === 3 || activeTab === 4) {
+          const predicate = activeTab === 3 ? 'followers' : 'following';
+          this.loadFollowings(predicate)
+        } else {
+          this.followings = [];
+        }
+      }
+    )
   }
 
   @observable profile: IProfile | null = null;
   @observable loadingProfile = true;
   @observable uploadingPhoto = false;
-  @observable loadingPhoto = false;
+  @observable loading = false;
   @observable editMode = false;
   @observable loadingForm = false;
+  @observable followings: IProfile[] = [];
+  @observable activeTab: number = 0;
 
   @computed get isCurrentUser() {
     if (this.rootStore.userStore.user && this.profile) {
@@ -23,6 +37,10 @@ export default class ProfileSTore {
     } else {
       return false;
     }
+  }
+
+  @action setActiveTab = (activeIndex: number) => {
+    this.activeTab = activeIndex;
   }
   
   @action loadProfile = async (username: string) => {
@@ -89,7 +107,7 @@ export default class ProfileSTore {
   }
 
   @action setMainPhoto = async (photo: IPhoto) => {
-    this.loadingPhoto = true;
+    this.loading = true;
     try {
       await agent.Profiles.setMainPhoto(photo.id);
       runInAction(() => {
@@ -97,28 +115,78 @@ export default class ProfileSTore {
         this.profile!.photos.find(a => a.isMain)!.isMain = false;
         this.profile!.photos.find(a => a.id === photo.id)!.isMain = true;
         this.profile!.image = photo.url;
-        this.loadingPhoto = false;
+        this.loading = false;
       })
     } catch (error) {
       toast.error('Problem setting your main photo');
       runInAction(() => {
-        this.loadingPhoto = false;
+        this.loading = false;
       })      
     }
   }
 
   @action deletePhoto = async (photo: IPhoto) => {
-    this.loadingPhoto = true;
+    this.loading = true;
     try {
       await agent.Profiles.deletePhoto(photo.id);
       runInAction(() => {
         this.profile!.photos = this.profile!.photos.filter(a => a.id !== photo.id);
-        this.loadingPhoto = false;
+        this.loading = false;
       })
     } catch (error) {
       toast.error('Problem deleting photo');
       runInAction(() => {
-        this.loadingPhoto = false;
+        this.loading = false;
+      })
+    }
+  }
+
+  @action follow = async (username: string) => {
+    this.loading = true;
+    try {
+      await agent.Profiles.follow(username);
+      runInAction(() => {
+        this.profile!.following = true;
+        this.profile!.followersCount++;
+        this.loading = false;
+      })
+    } catch (error) {
+      toast.error("Problem following user")
+      runInAction(() => {
+        this.loading = false;
+      })
+    }
+  }
+
+  @action unfollow = async (username: string) => {
+    this.loading = true;
+    try {
+      await agent.Profiles.unfollow(username);
+      runInAction(() => {
+        this.profile!.following = false;
+        this.profile!.followersCount--;
+        this.loading = false;
+      })
+    } catch (error) {
+      toast.error("Problem unfollowing user")
+      runInAction(() => {
+        this.loading = false;
+      })
+    }
+  }
+
+  @action loadFollowings = async (predicate: string) => {
+    this.loading = true;
+    try {
+      const profiles = await agent.Profiles.followings(this.profile!.username, predicate);
+      runInAction(() => {
+        this.followings = profiles;
+        this.loading = false;
+      })
+    } catch (error) {
+      toast.error("Problem loading followings");
+      runInAction(() => {
+        this.loading = false;
       })
     }
   }
