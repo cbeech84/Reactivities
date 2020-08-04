@@ -21,7 +21,7 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
               </Item.Description>
               {activity.isHost &&
                 <Item.Description>
-                  <Label basic color='orange' content='You are hosting this activity' />
+                  <Label basic color='green' content='You are hosting this activity' />
                 </Item.Description>
               }
               {activity.isGoing && !activity.isHost &&

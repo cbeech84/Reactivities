@@ -4,11 +4,11 @@ import { IProfile } from '../../app/models/profile';
 import { observer } from 'mobx-react-lite';
 
 interface IProps {
-  profile: IProfile,
-  isCurrentUser: boolean,
-  loading: boolean,
-  follow: (username: string) => void,
-  unfollow: (username: string) => void
+  profile: IProfile;
+  isCurrentUser: boolean;
+  loading: boolean;
+  follow: (username: string) => void;
+  unfollow: (username: string) => void;
 }
 
 const ProfileHeader: React.FC<IProps> = ({profile, isCurrentUser, loading, follow, unfollow}) => {
@@ -32,10 +32,10 @@ const ProfileHeader: React.FC<IProps> = ({profile, isCurrentUser, loading, follo
         <Grid.Column width={4}>
           <Statistic.Group widths={2}>
             <Statistic label='Followers' value={profile.followersCount}/>
-            <Statistic label='Following' value={profile.followingsCount}/>
+            <Statistic label='Following' value={profile.followingCount}/>
           </Statistic.Group>
           <Divider/>
-          {!isCurrentUser &&
+          {!isCurrentUser && (
           <Reveal animated='move'>
             <Reveal.Content visible style={{ width: '100%' }}>
               <Button
@@ -54,7 +54,7 @@ const ProfileHeader: React.FC<IProps> = ({profile, isCurrentUser, loading, follo
                 loading={loading}
               />
             </Reveal.Content>
-          </Reveal>}
+          </Reveal>)}
         </Grid.Column>
       </Grid>
     </Segment>

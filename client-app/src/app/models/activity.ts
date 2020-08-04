@@ -1,3 +1,8 @@
+export interface IActivitiesEnvelope {
+    activities: IActivity[];
+    activityCount: number;
+}
+
 export interface IActivity {
     id: string;
     title: string;
@@ -6,10 +11,10 @@ export interface IActivity {
     date: Date;
     city: string;
     venue: string;
-    isGoing: boolean,
-    isHost: boolean,
-    attendees: IAttendee[]
-    comments: IComment[]
+    isGoing: boolean;
+    isHost: boolean;
+    attendees: IAttendee[];
+    comments: IComment[];
 }
 
 export interface IComment {
@@ -44,9 +49,9 @@ export class ActivityFormValues implements IActivityFormValues {
 }
 
 export interface IAttendee {
-    username: string,
-    displayName: string,
-    image: string,
-    isHost: boolean,
-    following?: boolean
+    username: string;
+    displayName: string;
+    image: string;
+    isHost: boolean;
+    following?: boolean;
 }

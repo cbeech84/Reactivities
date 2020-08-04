@@ -38,8 +38,10 @@ namespace Application.Profiles
         };
 
         if (currentUser.Followings.Any(x => x.TargetId == user.Id))
+        {
             profile.IsFollowed = true;
-
+        }
+        
         return profile;
     }
   }
